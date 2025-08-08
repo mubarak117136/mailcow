@@ -265,10 +265,10 @@ REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 # For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://docs.mailcow.email/post_installation/firststeps-ip_bindings/
 
-HTTP_PORT=80
+HTTP_PORT=8081
 HTTP_BIND=
 
-HTTPS_PORT=443
+HTTPS_PORT=8444
 HTTPS_BIND=
 
 # Redirect HTTP connections to HTTPS - y/n
