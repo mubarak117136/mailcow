@@ -146,7 +146,14 @@ elif [ -a /etc/localtime ]; then
   DETECTED_TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
-MAILCOW_TZ=DETECTED_TZ
+while [ -z "${MAILCOW_TZ}" ]; do
+  if [ -z "${DETECTED_TZ}" ]; then
+    read -p "Timezone: " -e MAILCOW_TZ
+  else
+    read -p "Timezone [${DETECTED_TZ}]: " -e MAILCOW_TZ
+    [ -z "${MAILCOW_TZ}" ] && MAILCOW_TZ=${DETECTED_TZ}
+  fi
+done
 
 MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 
@@ -168,10 +175,43 @@ if [ -z "${SKIP_CLAMD}" ]; then
   fi
 fi
 
-MAILCOW_BRANCH="main"
+if [[ ${SKIP_BRANCH} != y ]]; then
+  echo "Which branch of mailcow do you want to use?"
+  echo ""
+  echo "Available Branches:"
+  echo "- master branch (stable updates) | default, recommended [1]"
+  echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
+  echo "- legacy branch (supported until February 2026) | deprecated, security updates only [3]"
+  sleep 1
 
-git fetch --all
-git checkout -f "$MAILCOW_BRANCH"
+  while [ -z "${MAILCOW_BRANCH}" ]; do
+    read -r -p  "Choose the Branch with it's number [1/2/3] " branch
+    case $branch in
+      [3])
+        MAILCOW_BRANCH="legacy"
+        ;;
+      [2])
+        MAILCOW_BRANCH="nightly"
+        ;;
+      *)
+        MAILCOW_BRANCH="master"
+      ;;
+    esac
+  done
+
+  git fetch --all
+  git checkout -f "$MAILCOW_BRANCH"
+
+elif [[ ${SKIP_BRANCH} == y ]]; then
+  echo -e "\033[33mEnabled Dev Mode.\033[0m"
+  echo -e "\033[33mNot checking out a different branch!\033[0m"
+  MAILCOW_BRANCH=$(git rev-parse --short $(git rev-parse @{upstream}))
+
+else
+  echo -e "\033[31mCould not determine branch input..."
+  echo -e "\033[31mExiting."
+  exit 1
+fi
 
 if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
