@@ -173,17 +173,6 @@ MAILCOW_BRANCH="main"
 git fetch --all
 git checkout -f "$MAILCOW_BRANCH"
 
-elif [[ ${SKIP_BRANCH} == y ]]; then
-  echo -e "\033[33mEnabled Dev Mode.\033[0m"
-  echo -e "\033[33mNot checking out a different branch!\033[0m"
-  MAILCOW_BRANCH=$(git rev-parse --short $(git rev-parse @{upstream}))
-
-else
-  echo -e "\033[31mCould not determine branch input..."
-  echo -e "\033[31mExiting."
-  exit 1
-fi
-
 if [ ! -z "${MAILCOW_BRANCH}" ]; then
   git_branch=${MAILCOW_BRANCH}
 fi
