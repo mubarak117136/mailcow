@@ -146,14 +146,7 @@ elif [ -a /etc/localtime ]; then
   DETECTED_TZ=$(readlink /etc/localtime|sed -n 's|^.*zoneinfo/||p')
 fi
 
-while [ -z "${MAILCOW_TZ}" ]; do
-  if [ -z "${DETECTED_TZ}" ]; then
-    read -p "Timezone: " -e MAILCOW_TZ
-  else
-    read -p "Timezone [${DETECTED_TZ}]: " -e MAILCOW_TZ
-    [ -z "${MAILCOW_TZ}" ] && MAILCOW_TZ=${DETECTED_TZ}
-  fi
-done
+MAILCOW_TZ=DETECTED_TZ
 
 MEM_TOTAL=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 
@@ -175,32 +168,10 @@ if [ -z "${SKIP_CLAMD}" ]; then
   fi
 fi
 
-if [[ ${SKIP_BRANCH} != y ]]; then
-  echo "Which branch of mailcow do you want to use?"
-  echo ""
-  echo "Available Branches:"
-  echo "- master branch (stable updates) | default, recommended [1]"
-  echo "- nightly branch (unstable updates, testing) | not-production ready [2]"
-  echo "- legacy branch (supported until February 2026) | deprecated, security updates only [3]"
-  sleep 1
+MAILCOW_BRANCH="main"
 
-  while [ -z "${MAILCOW_BRANCH}" ]; do
-    read -r -p  "Choose the Branch with it's number [1/2/3] " branch
-    case $branch in
-      [3])
-        MAILCOW_BRANCH="legacy"
-        ;;
-      [2])
-        MAILCOW_BRANCH="nightly"
-        ;;
-      *)
-        MAILCOW_BRANCH="master"
-      ;;
-    esac
-  done
-
-  git fetch --all
-  git checkout -f "$MAILCOW_BRANCH"
+git fetch --all
+git checkout -f "$MAILCOW_BRANCH"
 
 elif [[ ${SKIP_BRANCH} == y ]]; then
   echo -e "\033[33mEnabled Dev Mode.\033[0m"
@@ -569,7 +540,7 @@ if [ $? -eq 0 ]; then
   echo '  $MAILCOW_LAST_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_OWNER="mailcow";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_REPO="mailcow-dockerized";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mubarak117136/mailcow.git";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT="'$mailcow_git_commit'";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT_DATE="'$mailcow_git_commit_date'";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_BRANCH="'$git_branch'";' >> data/web/inc/app_info.inc.php
@@ -581,7 +552,7 @@ else
   echo '  $MAILCOW_LAST_GIT_VERSION="";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_OWNER="mailcow";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_REPO="mailcow-dockerized";' >> data/web/inc/app_info.inc.php
-  echo '  $MAILCOW_GIT_URL="https://github.com/mailcow/mailcow-dockerized";' >> data/web/inc/app_info.inc.php
+  echo '  $MAILCOW_GIT_URL="https://github.com/mubarak117136/mailcow.git";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT="";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_GIT_COMMIT_DATE="";' >> data/web/inc/app_info.inc.php
   echo '  $MAILCOW_BRANCH="'$git_branch'";' >> data/web/inc/app_info.inc.php
