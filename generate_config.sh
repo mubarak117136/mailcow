@@ -265,10 +265,10 @@ REDISPASS=$(LC_ALL=C </dev/urandom tr -dc A-Za-z0-9 2> /dev/null | head -c 28)
 # For IPv4 leave it as it is: HTTP_BIND= & HTTPS_PORT=
 # For IPv6 see https://docs.mailcow.email/post_installation/firststeps-ip_bindings/
 
-HTTP_PORT=8081
+HTTP_PORT=80
 HTTP_BIND=
 
-HTTPS_PORT=8444
+HTTPS_PORT=443
 HTTPS_BIND=
 
 # Redirect HTTP connections to HTTPS - y/n
@@ -359,7 +359,7 @@ ADDITIONAL_SERVER_NAMES=
 
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 
-SKIP_LETS_ENCRYPT=y
+SKIP_LETS_ENCRYPT=n
 
 # Create seperate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
